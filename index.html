@@ -133,7 +133,7 @@
 /** =========================
  *  CONFIG
  *  ========================= */
-const MAKE_WEBHOOK_URL = "tnwi0krlxhjbqib28duxx8x3v8f60k6x@hook.us2.make.com"; // 
+const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/dvsusllh2ltxcgslbwtchaf4w1acsaha"; // 
 
 /** =========================
  *  HELPERS
@@ -174,7 +174,7 @@ function init() {
   document.getElementById("complianceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("tnwi0krlxhjbqib28duxx8x3v8f60k6x@hook.us2.make.com")) {
+    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("https://hook.us2.make.com/dvsusllh2ltxcgslbwtchaf4w1acsaha")) {
       setStatus("Form is not configured yet (missing webhook URL).", "err");
       return;
     }
