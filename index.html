@@ -174,7 +174,7 @@ function init() {
   document.getElementById("complianceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("https://hook.us2.make.com/dvsusllh2ltxcgslbwtchaf4w1acsaha")) {
+    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("PASTE_MAKE_WEBHOOK_URL_HERE")) {
       setStatus("Form is not configured yet (missing webhook URL).", "err");
       return;
     }
