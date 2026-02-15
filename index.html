@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orchard Safety Compliance</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f7f9; margin:0; }
+    .wrap { max-width:720px; margin:24px auto; padding:16px; }
+    .card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; }
+    header { padding:16px 18px; border-bottom:1px solid #e5e7eb; }
+    header h1 { margin:0 0 6px; font-size:18px; }
+    header p { margin:0; font-size:13px; color:#4b5563; line-height:1.35; }
+
+    form { padding:18px; position:relative; }
+
+    label { display:block; font-size:13px; color:#111827; font-weight:700; margin:12px 0 6px; }
+    input[type="text"], input[type="tel"], select {
+      width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:12px;
+      font-size:15px; box-sizing:border-box; background:#fff;
+    }
+    .hint { font-size:12px; color:#6b7280; margin-top:6px; line-height:1.35; }
+
+    .section {
+      margin-top:14px;
+      padding:12px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:#fbfbfc;
+    }
+    .checks { display:grid; gap:10px; margin-top:8px; }
+    .checkRow {
+      display:flex; align-items:flex-start; gap:10px;
+      padding:10px; border-radius:12px; background:#fff; border:1px solid #e5e7eb;
+    }
+    .checkRow input { margin-top:2px; width:18px; height:18px; }
+    .checkText { font-size:13px; color:#111827; line-height:1.3; }
+    .checkText b { display:block; margin-bottom:2px; }
+
+    .actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+    button, a.btn {
+      padding:11px 14px; border-radius:12px; border:0; font-weight:800; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .primary { background:#2563eb; color:#fff; }
+    .secondary { background:#e5e7eb; color:#111827; }
+    .linkBtn { background:#111827; color:#fff; }
+
+    .status { font-size:13px; margin-top:6px; }
+    .ok { color:#065f46; }
+    .err { color:#991b1b; }
+
+    /* Autofill decoys */
+    .decoy { position:absolute; left:-9999px; top:-9999px; height:1px; width:1px; opacity:0; pointer-events:none; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <h1>Orchard Safety Compliance</h1>
+        <p>
+          Submit this form after completing the required safety materials. Your completion status is recorded for orchard operations
+          and FDA audit purposes.
+        </p>
+      </header>
+
+      <form id="complianceForm" autocomplete="off">
+        <!-- Autofill decoys -->
+        <input class="decoy" type="text"  name="contact_name"  autocomplete="name">
+        <input class="decoy" type="email" name="contact_email" autocomplete="email">
+        <input class="decoy" type="tel"   name="contact_phone" autocomplete="tel">
+        <input class="decoy" type="password" name="password" autocomplete="current-password">
+
+        <label for="fullName">Full Name</label>
+        <input id="fullName" name="fullName" type="text" autocapitalize="words" spellcheck="false" required />
+        <div class="hint">Enter your full name as you use it when signing up to volunteer.</div>
+
+        <label for="phone">Mobile Phone</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" required />
+        <div class="hint">Use the same mobile number you used when signing up to work in the orchard.</div>
+
+        <label for="seasonYear">Compliance Year</label>
+        <select id="seasonYear" name="seasonYear" required></select>
+        <div class="hint">Compliance is tracked by year for audits.</div>
+
+        <div class="section">
+          <label style="margin:0;">Completion Checklist</label>
+          <div class="checks">
+            <div class="checkRow">
+              <input id="safetyVideo" type="checkbox" />
+              <div class="checkText">
+                <b>Safety Videos Completed</b>
+                I have watched the required orchard safety videos for this year.
+              </div>
+            </div>
+
+            <div class="checkRow">
+              <input id="orchardSafety" type="checkbox" />
+              <div class="checkText">
+                <b>Orchard Safety Read</b>
+                I have read and understand the orchard safety information.
+              </div>
+            </div>
+
+            <div class="checkRow">
+              <input id="taskSafety" type="checkbox" />
+              <div class="checkText">
+                <b>Task Safety Read</b>
+                I have read and understand the safety guidance for the tasks I may be assigned.
+              </div>
+            </div>
+          </div>
+
+          <div class="hint" style="margin-top:10px;">
+            If you have not completed the materials yet, please return to the video page, complete them, then submit this form.
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" type="submit" id="submitBtn">Submit Compliance</button>
+          <button class="secondary" type="button" id="clearBtn">Clear</button>
+          <a class="btn linkBtn" href="https://northogdenorchard.net/orchardsafety">Back to Safety Videos</a>
+        </div>
+
+        <div id="status" class="status"></div>
+      </form>
+    </div>
+  </div>
+
+<script>
+/** =========================
+ *  CONFIG
+ *  ========================= */
+const MAKE_WEBHOOK_URL = "PASTE_MAKE_WEBHOOK_URL_HERE"; // <-- replace
+
+/** =========================
+ *  HELPERS
+ *  ========================= */
+const digitsOnly = (s) => (s || "").replace(/\D/g, "");
+const norm = (s) => (s || "").toLowerCase().trim().replace(/\s+/g, " ");
+
+function buildDedupeKey({ year, fullName, phone }) {
+  // annual compliance: year|name|phone
+  return [String(year), norm(fullName), digitsOnly(phone)].join("|");
+}
+
+function setStatus(msg, cls="") {
+  const s = document.getElementById("status");
+  s.textContent = msg;
+  s.className = `status ${cls}`;
+}
+
+/** =========================
+ *  INIT
+ *  ========================= */
+function init() {
+  const yearSel = document.getElementById("seasonYear");
+  const thisYear = new Date().getFullYear();
+  const years = [thisYear - 1, thisYear, thisYear + 1]; // flexibility early/late season
+  yearSel.innerHTML = years.map(y => `<option value="${y}" ${y === thisYear ? "selected": ""}>${y}</option>`).join("");
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    document.getElementById("fullName").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("safetyVideo").checked = false;
+    document.getElementById("orchardSafety").checked = false;
+    document.getElementById("taskSafety").checked = false;
+    document.getElementById("seasonYear").value = String(thisYear);
+    setStatus("");
+  });
+
+  document.getElementById("complianceForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("PASTE_MAKE_WEBHOOK_URL_HERE")) {
+      setStatus("Form is not configured yet (missing webhook URL).", "err");
+      return;
+    }
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const year = document.getElementById("seasonYear").value;
+
+    if (!fullName) { setStatus("Please enter your full name.", "err"); return; }
+    if (!phone) { setStatus("Please enter your mobile phone.", "err"); return; }
+
+    const payload = {
+      fullName,
+      phone,
+      safetyVideo: !!document.getElementById("safetyVideo").checked,
+      orchardSafety: !!document.getElementById("orchardSafety").checked,
+      taskSafety: !!document.getElementById("taskSafety").checked,
+      complianceYear: String(year),
+      dedupeKey: buildDedupeKey({ year, fullName, phone })
+    };
+
+    setStatus("Submitting…");
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(MAKE_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const text = await res.text();
+      if (res.ok) {
+        setStatus("Submitted. Thank you!", "ok");
+        // Auto-clear after success
+        document.getElementById("clearBtn").click();
+      } else {
+        setStatus(`Submit failed (${res.status}): ${text}`, "err");
+      }
+    } catch (err) {
+      setStatus(`Submit failed: ${err.message || err}`, "err");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
+// run reliably
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>
