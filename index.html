@@ -208,24 +208,13 @@ function init() {
         body: JSON.stringify(payload)
       });
 
-      const text = await res.text();
-      if (res.ok) {
-        setStatus("✅ Safety compliance recorded. Thank you!", "ok");
-        setTimeout(() => document.getElementById("clearBtn").click(), 1500);
-        // Auto-clear after success
-        if (res.ok) {
-        setStatus("✅ Safety compliance recorded. Thank you!", "ok");
+     const text = await res.text();
+if (res.ok) {
+  setStatus("✅ Safety compliance recorded. Thank you!", "ok");
+  // no auto-clear
 } else {
   setStatus(`Submit failed (${res.status}): ${text}`, "err");
 }
-      } else {
-        setStatus(`Submit failed (${res.status}): ${text}`, "err");
-      }
-    } catch (err) {
-      setStatus(`Submit failed: ${err.message || err}`, "err");
-    } finally {
-      btn.disabled = false;
-    }
   });
 }
 
