@@ -39,14 +39,23 @@
 
     .actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
     button, a.btn {
-      padding:11px 14px; border-radius:12px; border:0; font-weight:800; cursor:pointer;
-      text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+      padding:11px 14px;
+      border-radius:12px;
+      border:0;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:15px;              /* ensures link matches button size */
+      line-height:1.1;
     }
     .primary { background:#2563eb; color:#fff; }
     .secondary { background:#e5e7eb; color:#111827; }
     .linkBtn { background:#111827; color:#fff; }
 
-    .status { font-size:13px; margin-top:6px; }
+    .status { font-size:13px; margin-top:10px; }
     .ok { color:#065f46; }
     .err { color:#991b1b; }
 
@@ -123,8 +132,7 @@
           <button class="secondary" type="button" id="clearBtn">Clear</button>
           <a class="btn linkBtn" href="https://northogdenorchard.net/orchardsafety">Back to Safety Videos</a>
         </div>
-        <div class="hint" id="successMsg" style="font-weight:700; margin-top:10px;"></div>
-        <div class="error" id="errSubmit" style="margin-top:6px;"></div>
+
         <div id="status" class="status"></div>
       </form>
     </div>
@@ -134,13 +142,13 @@
 /** =========================
  *  CONFIG
  *  ========================= */
-const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/opol8z27kyscufmd4iwpccjkw3zsi2xt"; // 
+const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/opol8z27kyscufmd4iwpccjkw3zsi2xt";
 
 /** =========================
  *  HELPERS
  *  ========================= */
-const digitsOnly = (s) => (s || "").replace(/\D/g, "");
-const norm = (s) => (s || "").toLowerCase().trim().replace(/\s+/g, " ");
+const digitsOnly = (s) => (s || "").toString().replace(/\D/g, "");
+const norm = (s) => (s || "").toString().toLowerCase().trim().replace(/\s+/g, " ");
 
 function buildDedupeKey({ year, fullName, phone }) {
   // annual compliance: year|name|phone
@@ -149,7 +157,7 @@ function buildDedupeKey({ year, fullName, phone }) {
 
 function setStatus(msg, cls="") {
   const s = document.getElementById("status");
-  s.textContent = msg;
+  s.textContent = msg || "";
   s.className = `status ${cls}`;
 }
 
@@ -208,13 +216,17 @@ function init() {
         body: JSON.stringify(payload)
       });
 
-     const text = await res.text();
-if (res.ok) {
-  setStatus("✅ Safety compliance recorded. Thank you!", "ok");
-  // no auto-clear
-} else {
-  setStatus(`Submit failed (${res.status}): ${text}`, "err");
-}
+      const text = await res.text();
+      if (res.ok) {
+        setStatus("✅ Safety compliance recorded. Thank you!", "ok");
+      } else {
+        setStatus(`Submit failed (${res.status}): ${text}`, "err");
+      }
+    } catch (err) {
+      setStatus(`Submit failed: ${err.message || err}`, "err");
+    } finally {
+      btn.disabled = false;
+    }
   });
 }
 
