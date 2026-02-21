@@ -218,7 +218,7 @@ function init() {
 
       const text = await res.text();
       if (res.ok) {
-        setStatus("✅ Safety compliance recorded. Thank you!", "ok");
+        setStatus("✅ Safety compliance recorded. Thank you! You will receive a reminder a day before you volunteer date.", "ok");
       } else {
         setStatus(`Submit failed (${res.status}): ${text}`, "err");
       }
