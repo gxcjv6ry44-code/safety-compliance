@@ -213,7 +213,11 @@ function init() {
         setStatus("✅ Safety compliance recorded. Thank you!", "ok");
         setTimeout(() => document.getElementById("clearBtn").click(), 1500);
         // Auto-clear after success
-        document.getElementById("clearBtn").click();
+        if (res.ok) {
+        setStatus("✅ Safety compliance recorded. Thank you!", "ok");
+} else {
+  setStatus(`Submit failed (${res.status}): ${text}`, "err");
+}
       } else {
         setStatus(`Submit failed (${res.status}): ${text}`, "err");
       }
