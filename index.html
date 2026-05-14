@@ -11,22 +11,16 @@
     header { padding:16px 18px; border-bottom:1px solid #e5e7eb; }
     header h1 { margin:0 0 6px; font-size:18px; }
     header p { margin:0; font-size:13px; color:#4b5563; line-height:1.35; }
-
     form { padding:18px; position:relative; }
-
     label { display:block; font-size:13px; color:#111827; font-weight:700; margin:12px 0 6px; }
     input[type="text"], input[type="tel"], select {
       width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:12px;
       font-size:15px; box-sizing:border-box; background:#fff;
     }
     .hint { font-size:12px; color:#6b7280; margin-top:6px; line-height:1.35; }
-
     .section {
-      margin-top:14px;
-      padding:12px;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      background:#fbfbfc;
+      margin-top:14px; padding:12px; border:1px solid #e5e7eb;
+      border-radius:12px; background:#fbfbfc;
     }
     .checks { display:grid; gap:10px; margin-top:8px; }
     .checkRow {
@@ -36,34 +30,21 @@
     .checkRow input { margin-top:2px; width:18px; height:18px; }
     .checkText { font-size:13px; color:#111827; line-height:1.3; }
     .checkText b { display:block; margin-bottom:2px; }
-
     .actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
     button, a.btn {
-      padding:11px 14px;
-      border-radius:12px;
-      border:0;
-      font-weight:800;
-      cursor:pointer;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:15px;              /* ensures link matches button size */
-      line-height:1.1;
+      padding:11px 14px; border-radius:12px; border:0; font-weight:800; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center;
+      justify-content:center; font-size:15px; line-height:1.1;
     }
-    .primary { background:#2563eb; color:#fff; }
+    .primary   { background:#2563eb; color:#fff; }
     .secondary { background:#e5e7eb; color:#111827; }
-    .linkBtn { background:#111827; color:#fff; }
-
-    .status { font-size:13px; margin-top:10px; }
-    .ok { color:#065f46; }
+    .linkBtn   { background:#111827; color:#fff; }
+    .status    { font-size:13px; margin-top:10px; }
+    .ok  { color:#065f46; }
     .err { color:#991b1b; }
-
-    /* Autofill decoys */
     .decoy { position:absolute; left:-9999px; top:-9999px; height:1px; width:1px; opacity:0; pointer-events:none; }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="card">
@@ -74,13 +55,12 @@
           and FDA audit purposes.
         </p>
       </header>
-
       <form id="complianceForm" autocomplete="off">
         <!-- Autofill decoys -->
-        <input class="decoy" type="text"  name="contact_name"  autocomplete="name">
-        <input class="decoy" type="email" name="contact_email" autocomplete="email">
-        <input class="decoy" type="tel"   name="contact_phone" autocomplete="tel">
-        <input class="decoy" type="password" name="password" autocomplete="current-password">
+        <input class="decoy" type="text"     name="contact_name"  autocomplete="name">
+        <input class="decoy" type="email"    name="contact_email" autocomplete="email">
+        <input class="decoy" type="tel"      name="contact_phone" autocomplete="tel">
+        <input class="decoy" type="password" name="password"      autocomplete="current-password">
 
         <label for="fullName">Full Name</label>
         <input id="fullName" name="fullName" type="text" autocapitalize="words" spellcheck="false" required />
@@ -103,7 +83,6 @@
                 <b>Safety Videos Completed</b>
               </div>
             </div>
-
             <div class="checkRow">
               <input id="orchardSafety" type="checkbox" />
               <div class="checkText">
@@ -111,7 +90,6 @@
                 I have viewed and understand the orchard safety information.
               </div>
             </div>
-
             <div class="checkRow">
               <input id="taskSafety" type="checkbox" />
               <div class="checkText">
@@ -120,13 +98,14 @@
               </div>
             </div>
           </div>
-
           <div class="hint" style="margin-top:10px;">
             If you have not completed the materials yet, please return to the video page, complete them, then submit this form.
           </div>
         </div>
-        <div>
-          I acknowledge that I have received a safety orientation and training specific to the tasks and projects assigned. I also represent that I am physically able to perform the tasks and projects assigned.
+
+        <div style="margin-top:14px; font-size:13px; color:#111827;">
+          I acknowledge that I have received a safety orientation and training specific to the tasks and projects assigned.
+          I also represent that I am physically able to perform the tasks and projects assigned.
         </div>
 
         <div class="actions">
@@ -134,111 +113,115 @@
           <button class="secondary" type="button" id="clearBtn">Clear</button>
           <a class="btn linkBtn" href="https://northogdenorchard.net/orchardsafety">Back to Safety Videos</a>
         </div>
-
         <div id="status" class="status"></div>
       </form>
     </div>
   </div>
 
-<script>
-/** =========================
- *  CONFIG
- *  ========================= */
-const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/opol8z27kyscufmd4iwpccjkw3zsi2xt";
+  <script>
+    /***********************
+     * CONFIG
+     ***********************/
+    const SUPABASE_URL = "https://tfkdkekvtuqepjqsgjoc.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_JRFxF6A8mDcZX2D05CdoCQ_F6_rDbwh";
+    const SITE_ID      = 1; // North Ogden Orchard
 
-/** =========================
- *  HELPERS
- *  ========================= */
-const digitsOnly = (s) => (s || "").toString().replace(/\D/g, "");
-const norm = (s) => (s || "").toString().toLowerCase().trim().replace(/\s+/g, " ");
+    /***********************
+     * HELPERS
+     ***********************/
+    const digitsOnly = (s) => (s || "").toString().replace(/\D/g, "");
+    const normText   = (s) => (s || "").toString().toLowerCase().trim().replace(/\s+/g, " ");
 
-function buildDedupeKey({ year, fullName, phone }) {
-  // annual compliance: year|name|phone
-  return [String(year), norm(fullName), digitsOnly(phone)].join("|");
-}
-
-function setStatus(msg, cls="") {
-  const s = document.getElementById("status");
-  s.textContent = msg || "";
-  s.className = `status ${cls}`;
-}
-
-/** =========================
- *  INIT
- *  ========================= */
-function init() {
-  const yearSel = document.getElementById("seasonYear");
-  const thisYear = new Date().getFullYear();
-  const years = [thisYear - 1, thisYear, thisYear + 1]; // flexibility early/late season
-  yearSel.innerHTML = years.map(y => `<option value="${y}" ${y === thisYear ? "selected": ""}>${y}</option>`).join("");
-
-  document.getElementById("clearBtn").addEventListener("click", () => {
-    document.getElementById("fullName").value = "";
-    document.getElementById("phone").value = "";
-    document.getElementById("safetyVideo").checked = false;
-    document.getElementById("orchardSafety").checked = false;
-    document.getElementById("taskSafety").checked = false;
-    document.getElementById("seasonYear").value = String(thisYear);
-    setStatus("");
-  });
-
-  document.getElementById("complianceForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if (!MAKE_WEBHOOK_URL || MAKE_WEBHOOK_URL.includes("PASTE_MAKE_WEBHOOK_URL_HERE")) {
-      setStatus("Form is not configured yet (missing webhook URL).", "err");
-      return;
+    function setStatus(msg, cls = "") {
+      const s = document.getElementById("status");
+      s.textContent = msg || "";
+      s.className   = `status ${cls}`;
     }
 
-    const fullName = document.getElementById("fullName").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const year = document.getElementById("seasonYear").value;
+    /***********************
+     * INIT
+     ***********************/
+    function init() {
+      const yearSel  = document.getElementById("seasonYear");
+      const thisYear = new Date().getFullYear();
 
-    if (!fullName) { setStatus("Please enter your full name.", "err"); return; }
-    if (!phone) { setStatus("Please enter your mobile phone.", "err"); return; }
+      yearSel.innerHTML = [thisYear - 1, thisYear, thisYear + 1]
+        .map(y => `<option value="${y}" ${y === thisYear ? "selected" : ""}>${y}</option>`)
+        .join("");
 
-    const payload = {
-      fullName,
-      phone,
-      safetyVideo: !!document.getElementById("safetyVideo").checked,
-      orchardSafety: !!document.getElementById("orchardSafety").checked,
-      taskSafety: !!document.getElementById("taskSafety").checked,
-      complianceYear: String(year),
-      dedupeKey: buildDedupeKey({ year, fullName, phone })
-    };
-
-    setStatus("Submitting…");
-    const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-
-    try {
-      const res = await fetch(MAKE_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        document.getElementById("fullName").value       = "";
+        document.getElementById("phone").value          = "";
+        document.getElementById("safetyVideo").checked  = false;
+        document.getElementById("orchardSafety").checked = false;
+        document.getElementById("taskSafety").checked   = false;
+        document.getElementById("seasonYear").value     = String(thisYear);
+        setStatus("");
       });
 
-      const text = await res.text();
-      if (res.ok) {
-        setStatus("✅ Safety compliance recorded. Thank you! You will receive a reminder a day before you volunteer date.", "ok");
-      } else {
-        setStatus(`Submit failed (${res.status}): ${text}`, "err");
-      }
-    } catch (err) {
-      setStatus(`Submit failed: ${err.message || err}`, "err");
-    } finally {
-      btn.disabled = false;
+      document.getElementById("complianceForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const fullName = document.getElementById("fullName").value.trim();
+        const phone    = document.getElementById("phone").value.trim();
+        const year     = parseInt(document.getElementById("seasonYear").value, 10);
+
+        if (!fullName) { setStatus("Please enter your full name.", "err"); return; }
+        if (!phone)    { setStatus("Please enter your mobile phone.", "err"); return; }
+
+        const phoneKey    = digitsOnly(phone);
+        const fullNameKey = normText(fullName);
+
+        const payload = {
+          site_id:         SITE_ID,
+          full_name:       fullName,
+          full_name_key:   fullNameKey,
+          phone:           phoneKey,
+          phone_key:       phoneKey,
+          safety_video:    !!document.getElementById("safetyVideo").checked,
+          orchard_safety:  !!document.getElementById("orchardSafety").checked,
+          task_safety:     !!document.getElementById("taskSafety").checked,
+          compliance_year: year,
+          submitted_on:    new Date().toISOString(),
+        };
+
+        setStatus("Submitting…");
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = true;
+
+        try {
+          // Upsert: if a record already exists for this person + year, update it
+          const res = await fetch(SUPABASE_URL + "/rest/v1/safety_compliance", {
+            method:  "POST",
+            headers: {
+              "apikey":        SUPABASE_KEY,
+              "Authorization": "Bearer " + SUPABASE_KEY,
+              "Content-Type":  "application/json",
+              "Prefer":        "resolution=merge-duplicates,return=minimal",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.status === 201 || res.status === 200) {
+            setStatus("✅ Safety compliance recorded. Thank you! You will receive a reminder the day before your volunteer date.", "ok");
+          } else {
+            const text = await res.text();
+            console.error("Supabase error:", res.status, text);
+            setStatus(`Submit failed (${res.status}). Please try again or contact us.`, "err");
+          }
+        } catch (err) {
+          setStatus(`Submit failed: ${err.message || err}`, "err");
+        } finally {
+          btn.disabled = false;
+        }
+      });
     }
-  });
-}
 
-// run reliably
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
-</script>
-
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  </script>
 </body>
 </html>
